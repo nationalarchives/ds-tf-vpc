@@ -1,12 +1,22 @@
+# ------------------------------------------------------------------------------
+# cloudwatch and flow logs
+# ------------------------------------------------------------------------------
+
+variable "environment" {}
+variable "owner" {}
+variable "created_by" {}
+
+# ------------------------------------------------------------------------------
+
 # Create a Cloudwatch Log Group for VPC flow logs
 resource "aws_cloudwatch_log_group" "flow_logs" {
-    name = "${title(var.environment)}_vpc_flowlog"
+    name = "${var.environment}_vpc_flowlog"
 
     tags = {
         environment = var.environment
         Terraform   = "True"
-        Owner       = "auto-modernise"
-        CreatedBy   = "steven.hirschorn@nationalarchives.gov.uk"
+        Owner       = var.owner
+        CreatedBy   = var.created_by
     }
 }
 
@@ -19,8 +29,8 @@ resource "aws_iam_role" "flow_logs_role" {
     tags = {
         environment = var.environment
         Terraform   = "True"
-        Owner       = "auto-modernise"
-        CreatedBy   = "steven.hirschorn@nationalarchives.gov.uk"
+        Owner       = var.owner
+        CreatedBy   = var.created_by
     }
 }
 
