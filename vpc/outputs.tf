@@ -39,17 +39,17 @@ output "private_route_table" {
 
 output "public_NACL"{
   description = "NACL ID for peering stuff"
-  value = "${aws_network_acl.VPC_ACL_Public.id}"
+  value = "${aws_network_acl.vpc_acl_public.id}"
 }
 
 output "private_NACL"{
   description = "NACL ID for peering stuff"
-  value = "${aws_network_acl.VPC_ACL_Private.id}"
+  value = "${aws_network_acl.vpc_acl_private.id}"
 }
 
 output "private_db_NACL"{
   description = "NACL ID for peering stuff"
-  value = "${aws_network_acl.VPC_ACL_Private_DB.id}"
+  value = "${aws_network_acl.vpc_acl_private_DB.id}"
 }
 
 output "management_sg" {
