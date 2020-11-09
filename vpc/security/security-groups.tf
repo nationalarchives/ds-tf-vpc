@@ -6,7 +6,7 @@
 resource "aws_security_group" "generic_mgmt" {
     name        = "generic-management-${var.environment}"
     description = "generic security group to be populated by peering when initiated."
-    vpc_id      = aws_vpc.tna_vpc.id
+    vpc_id      = data.terraform_remote_state.vpc.outputs.id
 
     tags = {
         Name        = "Generic-management-${var.environment}"
@@ -20,7 +20,7 @@ resource "aws_security_group" "generic_mgmt" {
 resource "aws_security_group" "private_web_access" {
     name        = "private-web-access-${var.environment}"
     description = "Allow traffic from public subnet and some outbound"
-    vpc_id      = aws_vpc.tna_vpc.id
+    vpc_id      = data.terraform_remote_state.vpc.outputs.id
 
     tags = {
         Name        = "Private-access-${var.environment}"
@@ -35,8 +35,8 @@ resource "aws_security_group_rule" "private_http_inbound" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [
-        var.public_subnet_1a,
-        var.public_subnet_1b,
+        data.terraform_remote_state.vpc.outputs.public_subnet_1a,
+        data.terraform_remote_state.vpc.outputs.public_subnet_1b,
         var.intersite_computers,
         var.tna_dev_network]
 
@@ -49,8 +49,8 @@ resource "aws_security_group_rule" "private_https_inbound" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [
-        var.public_subnet_1a,
-        var.public_subnet_1b,
+        data.terraform_remote_state.vpc.outputs.public_subnet_1a,
+        data.terraform_remote_state.vpc.outputs.public_subnet_1b,
         var.intersite_computers,
         var.tna_dev_network,
         var.tna_soaapp_network]
@@ -86,7 +86,7 @@ resource "aws_security_group_rule" "private_internal_outbound" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-        var.vpc_cidr]
+        data.terraform_remote_state.vpc.outputs.vpc_cidr]
 
     security_group_id = aws_security_group.private_web_access.id
 }
@@ -107,7 +107,7 @@ resource "aws_security_group_rule" "private_mongo_outbound" {
 resource "aws_security_group" "private_mysql_access" {
     name        = "private-mysql-access-${var.environment}"
     description = "Allow MySQL traffic inbound from private web subnet and let some traffic out"
-    vpc_id      = aws_vpc.tna_vpc.id
+    vpc_id      = data.terraform_remote_state.vpc.outputs.id
 
     tags = {
         Name        = "private-MySQL-access-${var.environment}"
@@ -122,8 +122,8 @@ resource "aws_security_group_rule" "private_mysql_inbound" {
     to_port     = 3306
     protocol    = "tcp"
     cidr_blocks = [
-        var.private_subnet_1a,
-        var.private_subnet_1b,
+        data.terraform_remote_state.vpc.outputs.private_subnet_1a,
+        data.terraform_remote_state.vpc.outputs.private_subnet_1b,
         var.intersite_computers]
 
     security_group_id = aws_security_group.private_mysql_access.id
@@ -157,7 +157,7 @@ resource "aws_security_group_rule" "private_mysql_internal_outbound" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-        var.vpc_cidr]
+        data.terraform_remote_state.vpc.outputs.vpc_cidr]
 
     security_group_id = aws_security_group.private_mysql_access.id
 }
@@ -166,7 +166,7 @@ resource "aws_security_group_rule" "private_mysql_internal_outbound" {
 resource "aws_security_group" "private_mssql_access" {
     name        = "private-mssql-access-${var.environment}"
     description = "Allow MS SQL traffic inbound from private web subnet and let some traffic out"
-    vpc_id      = aws_vpc.tna_vpc.id
+    vpc_id      = data.terraform_remote_state.vpc.outputs.id
 
     tags = {
         Name        = "private-MS-SQL-access-${var.environment}"
@@ -181,8 +181,8 @@ resource "aws_security_group_rule" "private_mssql_inbound" {
     to_port     = 4333
     protocol    = "tcp"
     cidr_blocks = [
-        var.private_subnet_1a,
-        var.private_subnet_1b,
+        data.terraform_remote_state.vpc.outputs.private_subnet_1a,
+        data.terraform_remote_state.vpc.outputs.private_subnet_1b,
         var.intersite_computers,
         var.ssis_server]
 
@@ -217,7 +217,7 @@ resource "aws_security_group_rule" "private_mssql_internal_outbound" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-        var.vpc_cidr]
+        data.terraform_remote_state.vpc.outputs.vpc_cidr]
 
     security_group_id = aws_security_group.private_mssql_access.id
 }
@@ -228,7 +228,7 @@ resource "aws_security_group_rule" "private_mssql_internal_outbound" {
 resource "aws_security_group" "mgmt_security_group" {
     name        = "mgmt-access-${var.environment}"
     description = "management traffic inbound"
-    vpc_id      = aws_vpc.tna_vpc.id
+    vpc_id      = data.terraform_remote_state.vpc.outputs.id
 
     tags = {
         Name        = "Private-MGMT-access-${var.environment}"
@@ -325,6 +325,3 @@ resource "aws_security_group_rule" "priv_mgmt_https" {
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
-
-
-# Security groups done for now
