@@ -1,6 +1,6 @@
 # ------------------------------------------------------------------------------
 # cloudwatch and flow logs
-# create a Cloudwatch Log Group for VPC flow logs
+# create a Cloudwatch log group for VPC flow logs
 # ------------------------------------------------------------------------------
 resource "aws_cloudwatch_log_group" "flow_logs" {
     name = "${var.environment}-vpc-flowlog"

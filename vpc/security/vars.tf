@@ -5,9 +5,10 @@ variable "environment" {}
 variable "owner" {}
 variable "created_by" {}
 
-variable "browse_access" {}
-variable "intersite_computers" {}
-variable "ssis_server" {}
-variable "lobapp_servers" {}
-variable "tna_dev_network" {}
-variable "tna_soaapp_network" {}
+variable "everyone" {}
+variable "intersite_vpc" {}
+
+variable "kew_ssis_server" {}
+variable "kew_lobapp_network" {}
+variable "kew_developer_network" {}
+variable "kew_app_network" {}
