@@ -6,7 +6,8 @@ resource "aws_vpc" "vpc" {
     enable_dns_hostnames = true
 
     tags = {
-        Name        = "${var.environment}_vpc"
+        Account     = var.account
+        Name        = "${var.account}-vpc"
         Environment = var.environment
         Terraform   = "True"
         Owner       = var.owner
@@ -19,6 +20,7 @@ resource "aws_internet_gateway" "igw" {
     vpc_id = aws_vpc.vpc.id
 
     tags = {
+        Account     = var.account
         Name        = "${var.environment}-igw"
         Environment = var.environment
         Terraform   = "True"
@@ -32,6 +34,7 @@ resource "aws_eip" "nat" {
     vpc = true
 
     tags = {
+        Account     = var.account
         Environment = var.environment
         Terraform   = "True"
         Description = "eip for nat gateway"
