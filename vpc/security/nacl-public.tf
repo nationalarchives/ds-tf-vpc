@@ -6,6 +6,8 @@
 resource "aws_network_acl" "vpc_nacl_public" {
     vpc_id = var.vpc_id
 
+    subnet_ids = var.public_subnet_ids
+
     tags = {
         Name        = "public-nacl-${var.environment}"
         Account     = var.account
