@@ -5,7 +5,6 @@
 # ------------------------------------------------------------------------------
 resource "aws_network_acl" "vpc_nacl_private" {
     vpc_id     = var.vpc_id
-
     subnet_ids = var.private_subnet_ids
 
     tags = {
