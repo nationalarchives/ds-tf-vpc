@@ -1,30 +1,31 @@
 # ------------------------------------------------------------------------------
 # security groups
 # ------------------------------------------------------------------------------
-# Outside world inbound web:
+# outside world inbound web:
 
 resource "aws_security_group" "generic_mgmt" {
     name        = "generic-management-${var.environment}"
     description = "generic security group to be populated by peering when initiated."
-    vpc_id      = data.terraform_remote_state.vpc.outputs.id
+    vpc_id      = var.vpc_id
 
     tags = {
         Name        = "Generic-management-${var.environment}"
-        environment = var.environment
+        Environment = var.environment
         Terraform   = "True"
     }
 }
 
-# From Public to private web servcies
-
+# ------------------------------------------------------------------------------
+# public to private web servcies
+# ------------------------------------------------------------------------------
 resource "aws_security_group" "private_web_access" {
     name        = "private-web-access-${var.environment}"
     description = "Allow traffic from public subnet and some outbound"
-    vpc_id      = data.terraform_remote_state.vpc.outputs.id
+    vpc_id      = var.vpc_id
 
     tags = {
-        Name        = "Private-access-${var.environment}"
-        environment = var.environment
+        Name        = "private-access-${var.environment}"
+        Environment = var.environment
         Terraform   = "True"
     }
 }
@@ -34,11 +35,9 @@ resource "aws_security_group_rule" "private_http_inbound" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [
-        data.terraform_remote_state.vpc.outputs.public_subnet_1a,
-        data.terraform_remote_state.vpc.outputs.public_subnet_1b,
-        var.intersite_computers,
-        var.tna_dev_network]
+    cidr_blocks = concat(var.public_cidrs, [
+        var.intersite_vpc,
+        var.kew_developer_network])
 
     security_group_id = aws_security_group.private_web_access.id
 }
@@ -48,12 +47,10 @@ resource "aws_security_group_rule" "private_https_inbound" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [
-        data.terraform_remote_state.vpc.outputs.public_subnet_1a,
-        data.terraform_remote_state.vpc.outputs.public_subnet_1b,
-        var.intersite_computers,
-        var.tna_dev_network,
-        var.tna_soaapp_network]
+    cidr_blocks = concat(var.public_cidrs, [
+        var.intersite_vpc,
+        var.kew_developer_network,
+        var.kew_app_network])
 
     security_group_id = aws_security_group.private_web_access.id
 }
@@ -64,7 +61,7 @@ resource "aws_security_group_rule" "private_http_outbound" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.private_web_access.id
 }
@@ -75,7 +72,7 @@ resource "aws_security_group_rule" "private_https_outbound" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.private_web_access.id
 }
@@ -86,7 +83,7 @@ resource "aws_security_group_rule" "private_internal_outbound" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-        data.terraform_remote_state.vpc.outputs.vpc_cidr]
+        var.vpc_cidr]
 
     security_group_id = aws_security_group.private_web_access.id
 }
@@ -97,21 +94,23 @@ resource "aws_security_group_rule" "private_mongo_outbound" {
     to_port     = 27017
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.private_web_access.id
 }
 
-# Database security groups
-# MysSQL first!
+# ------------------------------------------------------------------------------
+# database security groups
+# ------------------------------------------------------------------------------
+# MysSQL
 resource "aws_security_group" "private_mysql_access" {
     name        = "private-mysql-access-${var.environment}"
     description = "Allow MySQL traffic inbound from private web subnet and let some traffic out"
-    vpc_id      = data.terraform_remote_state.vpc.outputs.id
+    vpc_id      = var.vpc_id
 
     tags = {
         Name        = "private-MySQL-access-${var.environment}"
-        environment = var.environment
+        Environment = var.environment
         Terraform   = "True"
     }
 }
@@ -121,10 +120,8 @@ resource "aws_security_group_rule" "private_mysql_inbound" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [
-        data.terraform_remote_state.vpc.outputs.private_subnet_1a,
-        data.terraform_remote_state.vpc.outputs.private_subnet_1b,
-        var.intersite_computers]
+    cidr_blocks = concat(var.private_cidrs, [
+        var.intersite_vpc])
 
     security_group_id = aws_security_group.private_mysql_access.id
 }
@@ -135,7 +132,7 @@ resource "aws_security_group_rule" "private_mysql_http_outbound" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.private_mysql_access.id
 }
@@ -146,7 +143,7 @@ resource "aws_security_group_rule" "private_mysql_https_outbound" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.private_mysql_access.id
 }
@@ -157,20 +154,22 @@ resource "aws_security_group_rule" "private_mysql_internal_outbound" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-        data.terraform_remote_state.vpc.outputs.vpc_cidr]
+        var.vpc_cidr]
 
     security_group_id = aws_security_group.private_mysql_access.id
 }
 
-# Now MS SQL Server:
+# ------------------------------------------------------------------------------
+# MS-SQL server:
+# ------------------------------------------------------------------------------
 resource "aws_security_group" "private_mssql_access" {
     name        = "private-mssql-access-${var.environment}"
     description = "Allow MS SQL traffic inbound from private web subnet and let some traffic out"
-    vpc_id      = data.terraform_remote_state.vpc.outputs.id
+    vpc_id      = var.vpc_id
 
     tags = {
         Name        = "private-MS-SQL-access-${var.environment}"
-        environment = var.environment
+        Environment = var.environment
         Terraform   = "True"
     }
 }
@@ -180,11 +179,9 @@ resource "aws_security_group_rule" "private_mssql_inbound" {
     from_port   = 4333
     to_port     = 4333
     protocol    = "tcp"
-    cidr_blocks = [
-        data.terraform_remote_state.vpc.outputs.private_subnet_1a,
-        data.terraform_remote_state.vpc.outputs.private_subnet_1b,
-        var.intersite_computers,
-        var.ssis_server]
+    cidr_blocks = concat(var.private_cidrs, [
+        var.intersite_vpc,
+        var.kew_ssis_server])
 
     security_group_id = aws_security_group.private_mssql_access.id
 }
@@ -195,7 +192,7 @@ resource "aws_security_group_rule" "private_mssql_http_outbound" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.private_mssql_access.id
 }
@@ -206,7 +203,7 @@ resource "aws_security_group_rule" "private_mssql_https_outbound" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.private_mssql_access.id
 }
@@ -217,22 +214,22 @@ resource "aws_security_group_rule" "private_mssql_internal_outbound" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-        data.terraform_remote_state.vpc.outputs.vpc_cidr]
+        var.vpc_cidr]
 
     security_group_id = aws_security_group.private_mssql_access.id
 }
 
-
-# Management stuff
-
+# ------------------------------------------------------------------------------
+# management stuff
+# ------------------------------------------------------------------------------
 resource "aws_security_group" "mgmt_security_group" {
     name        = "mgmt-access-${var.environment}"
     description = "management traffic inbound"
-    vpc_id      = data.terraform_remote_state.vpc.outputs.id
+    vpc_id      = var.vpc_id
 
     tags = {
         Name        = "Private-MGMT-access-${var.environment}"
-        environment = var.environment
+        Environment = var.environment
         Terraform   = "True"
     }
 }
@@ -243,7 +240,7 @@ resource "aws_security_group_rule" "mgmt_ssh_inbound" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [
-        var.intersite_computers]
+        var.intersite_vpc]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
@@ -254,7 +251,7 @@ resource "aws_security_group_rule" "mgmt_rdp_inbound" {
     to_port     = 3389
     protocol    = "tcp"
     cidr_blocks = [
-        var.intersite_computers]
+        var.intersite_vpc]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
@@ -265,7 +262,7 @@ resource "aws_security_group_rule" "mgmt_smb_inbound" {
     to_port     = 445
     protocol    = "tcp"
     cidr_blocks = [
-        var.intersite_computers]
+        var.intersite_vpc]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
@@ -276,7 +273,7 @@ resource "aws_security_group_rule" "mgmt_winrm_inbound" {
     to_port     = 5986
     protocol    = "tcp"
     cidr_blocks = [
-        var.intersite_computers]
+        var.intersite_vpc]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
@@ -287,11 +284,10 @@ resource "aws_security_group_rule" "mgmt_SQL_inbound" {
     to_port     = 4333
     protocol    = "tcp"
     cidr_blocks = [
-        var.intersite_computers]
+        var.intersite_vpc]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
-
 
 resource "aws_security_group_rule" "mgmt_access_inbound" {
     type        = "egress"
@@ -299,7 +295,7 @@ resource "aws_security_group_rule" "mgmt_access_inbound" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [
-        var.intersite_computers]
+        var.intersite_vpc]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
@@ -310,7 +306,7 @@ resource "aws_security_group_rule" "priv_mgmt_http" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }
@@ -321,7 +317,7 @@ resource "aws_security_group_rule" "priv_mgmt_https" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [
-        "0.0.0.0/0"]
+        var.everyone]
 
     security_group_id = aws_security_group.mgmt_security_group.id
 }

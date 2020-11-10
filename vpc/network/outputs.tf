@@ -14,16 +14,43 @@ output "vpc_cidr" {
     value = aws_vpc.vpc.cidr_block
 }
 
-output "publicsubnet_ids" {
+output "public_cidrs" {
+    value = [
+        var.public_1a_cidr,
+        var.public_1b_cidr
+    ]
+}
+
+output "private_cidrs" {
+    value = [
+        var.private_1a_cidr,
+        var.private_1b_cidr
+    ]
+}
+
+output "private_db_cidrs" {
+    value = [
+        var.private_db_1a_cidr,
+        var.private_db_1b_cidr
+    ]
+}
+
+output "public_subnet_ids" {
     value = [
         aws_subnet.public_1a.id,
         aws_subnet.public_1b.id]
 }
 
-output "privatesubnet_ids" {
+output "private_subnet_ids" {
     value = [
         aws_subnet.private_1a.id,
         aws_subnet.private_1b.id]
+}
+
+output "private_db_subnet_ids" {
+    value = [
+        aws_subnet.private_db_1a.id,
+        aws_subnet.private_db_1b.id]
 }
 
 output "public_route_table" {

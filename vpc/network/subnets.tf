@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 resource "aws_subnet" "public_1a" {
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.public_subnet_1a
+    cidr_block        = var.public_1a_cidr
     availability_zone = "${var.vpc_region}a"
 
     map_public_ip_on_launch = true
@@ -22,7 +22,7 @@ resource "aws_subnet" "public_1a" {
 
 resource "aws_subnet" "public_1b" {
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.public_subnet_1b
+    cidr_block        = var.public_1b_cidr
     availability_zone = "${var.vpc_region}b"
 
     map_public_ip_on_launch = true
@@ -42,7 +42,7 @@ resource "aws_subnet" "public_1b" {
 # ------------------------------------------------------------------------------
 resource "aws_subnet" "private_1a" {
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_subnet_1a
+    cidr_block        = var.private_1a_cidr
     availability_zone = "${var.vpc_region}a"
 
     map_public_ip_on_launch = false
@@ -59,7 +59,7 @@ resource "aws_subnet" "private_1a" {
 
 resource "aws_subnet" "private_1b" {
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_subnet_1b
+    cidr_block        = var.private_1b_cidr
     availability_zone = "${var.vpc_region}b"
 
     map_public_ip_on_launch = false
@@ -79,7 +79,7 @@ resource "aws_subnet" "private_1b" {
 # ------------------------------------------------------------------------------
 resource "aws_subnet" "private_db_1a" {
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_db_subnet_1a
+    cidr_block        = var.private_db_1a_cidr
     availability_zone = "${var.vpc_region}a"
 
     map_public_ip_on_launch = false
@@ -96,7 +96,7 @@ resource "aws_subnet" "private_db_1a" {
 
 resource "aws_subnet" "private_db_1b" {
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_db_subnet_1b
+    cidr_block        = var.private_db_1b_cidr
     availability_zone = "${var.vpc_region}b"
 
     map_public_ip_on_launch = false
