@@ -6,11 +6,6 @@ variable "created_by" {}
 variable "vpc_cidr" {}
 variable "vpc_region" {}
 
-variable "public_1a_cidr" {}
-variable "public_1b_cidr" {}
-
-variable "private_1a_cidr" {}
-variable "private_1b_cidr" {}
-
-variable "private_db_1a_cidr" {}
-variable "private_db_1b_cidr" {}
+variable "public_subnets" {}
+variable "private_subnets" {}
+variable "private_db_subnets" {}

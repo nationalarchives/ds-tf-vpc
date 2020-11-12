@@ -3,35 +3,20 @@
 # ------------------------------------------------------------------------------
 # public
 # ------------------------------------------------------------------------------
-resource "aws_subnet" "public_1a" {
+resource "aws_subnet" "public_subs" {
+    count = length(var.public_subnets)
+
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.public_1a_cidr
-    availability_zone = "${var.vpc_region}a"
+    cidr_block        = var.public_subnets[count.index]["cidr"]
+    availability_zone = var.public_subnets[count.index]["az"]
 
     map_public_ip_on_launch = true
 
     tags = {
         Account     = var.account
-        Name        = "public-subnet-1a-${var.environment}"
+        Name        = var.public_subnets[count.index]["name"]
         Environment = var.environment
-        Terraform   = "True"
-        Owner       = var.owner
-        CreatedBy   = var.created_by
-    }
-}
-
-resource "aws_subnet" "public_1b" {
-    vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.public_1b_cidr
-    availability_zone = "${var.vpc_region}b"
-
-    map_public_ip_on_launch = true
-
-    tags = {
-        Account     = var.account
-        Name        = "public-subnet-1b-${var.environment}"
-        Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
@@ -40,35 +25,20 @@ resource "aws_subnet" "public_1b" {
 # ------------------------------------------------------------------------------
 # private subnets
 # ------------------------------------------------------------------------------
-resource "aws_subnet" "private_1a" {
+resource "aws_subnet" "private_subs" {
+    count = length(var.private_subnets)
+
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_1a_cidr
-    availability_zone = "${var.vpc_region}a"
+    cidr_block        = var.private_subnets[count.index]["cidr"]
+    availability_zone = var.private_subnets[count.index]["az"]
 
     map_public_ip_on_launch = false
 
     tags = {
         Account     = var.account
-        Name        = "private-subnet-1a-${var.environment}"
+        Name        = var.private_subnets[count.index]["name"]
         Environment = var.environment
-        Terraform   = "True"
-        Owner       = var.owner
-        CreatedBy   = var.created_by
-    }
-}
-
-resource "aws_subnet" "private_1b" {
-    vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_1b_cidr
-    availability_zone = "${var.vpc_region}b"
-
-    map_public_ip_on_launch = false
-
-    tags = {
-        Account     = var.account
-        Name        = "private-subnet-1b-${var.environment}"
-        Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
@@ -77,53 +47,36 @@ resource "aws_subnet" "private_1b" {
 # ------------------------------------------------------------------------------
 # db subnets
 # ------------------------------------------------------------------------------
-resource "aws_subnet" "private_db_1a" {
+resource "aws_subnet" "private_db_subs" {
+    count = length(var.private_db_subnets)
+
     vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_db_1a_cidr
-    availability_zone = "${var.vpc_region}a"
+    cidr_block        = var.private_db_subnets[count.index]["cidr"]
+    availability_zone = var.private_db_subnets[count.index]["az"]
 
     map_public_ip_on_launch = false
 
     tags = {
         Account     = var.account
-        Name        = "private-db-subnet-1a-${var.environment}"
+        Name        = var.private_db_subnets[count.index]["name"]
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
 }
 
-resource "aws_subnet" "private_db_1b" {
-    vpc_id            = aws_vpc.vpc.id
-    cidr_block        = var.private_db_1b_cidr
-    availability_zone = "${var.vpc_region}b"
-
-    map_public_ip_on_launch = false
-
-    tags = {
-        Account     = var.account
-        Name        = "private-db-subnet-1b-${var.environment}"
-        Environment = var.environment
-        Terraform   = "True"
-        Owner       = var.owner
-        CreatedBy   = var.created_by
-    }
-}
-
-# DB Subnet Group for launching RDS instances
+#DB Subnet Group for launching RDS instances
 resource "aws_db_subnet_group" "db_subnet_group" {
-    name = "tna-db_subnet_group_${var.environment}"
+    name = "db_subnet_group_${var.environment}"
 
-    subnet_ids = [
-        aws_subnet.private_db_1a.id,
-        aws_subnet.private_db_1b.id]
+    subnet_ids = aws_subnet.private_db_subs[*].id
 
     tags = {
         Account     = var.account
         Environment = var.environment
-        Name        = "${var.environment}-db-subnet-group"
-        Terraform   = "True"
+        Name        = "db-subnet-group-${var.environment}"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
