@@ -9,7 +9,7 @@ resource "aws_vpc" "vpc" {
         Account     = var.account
         Name        = "${var.account}-vpc"
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
@@ -23,7 +23,7 @@ resource "aws_internet_gateway" "igw" {
         Account     = var.account
         Name        = "${var.environment}-igw"
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
@@ -36,7 +36,7 @@ resource "aws_eip" "nat" {
     tags = {
         Account     = var.account
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Description = "eip for nat gateway"
         Owner       = var.owner
         CreatedBy   = var.created_by

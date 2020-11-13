@@ -9,7 +9,7 @@ resource "aws_network_acl" "vpc_nacl_private" {
         Name        = "private-nacl-${var.environment}"
         Account     = var.account
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
     }
 }
 

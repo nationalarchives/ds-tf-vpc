@@ -8,7 +8,7 @@ resource "aws_cloudwatch_log_group" "flow_logs" {
     tags = {
         Account     = var.account
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
@@ -23,7 +23,7 @@ resource "aws_iam_role" "flow_logs_role" {
     tags = {
         Account     = var.account
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }

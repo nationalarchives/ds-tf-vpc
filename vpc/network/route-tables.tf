@@ -10,7 +10,7 @@ resource "aws_route_table" "public_rt" {
         Account     = var.account
         Name        = "public-${var.environment}"
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
@@ -40,7 +40,7 @@ resource "aws_route_table" "private_rt" {
         Account     = var.account
         Name        = "private-${var.environment}"
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
