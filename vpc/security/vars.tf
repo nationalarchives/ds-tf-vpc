@@ -1,13 +1,15 @@
-variable "network_key" {}
-
 variable "account" {}
 variable "environment" {}
 variable "owner" {}
 variable "created_by" {}
 
-variable "browse_access" {}
-variable "intersite_computers" {}
-variable "ssis_server" {}
-variable "lobapp_servers" {}
-variable "tna_dev_network" {}
-variable "tna_soaapp_network" {}
+variable "vpc_id" {}
+variable "vpc_cidr" {}
+
+variable "public_subnet_ids" {}
+variable "private_subnet_ids" {}
+variable "private_db_subnet_ids" {}
+
+variable "public_nacls" {}
+variable "private_nacls" {}
+variable "private_db_nacls" {}

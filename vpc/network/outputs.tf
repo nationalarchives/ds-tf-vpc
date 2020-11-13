@@ -6,30 +6,22 @@ output "id" {
     value = aws_vpc.vpc.id
 }
 
-output "region" {
-    value = var.vpc_region
+output "public_subs_ids" {
+    value = concat([], aws_subnet.public_subs[*].id)
 }
 
-output "vpc_cidr" {
-    value = aws_vpc.vpc.cidr_block
+output "private_subs_ids" {
+    value = concat([], aws_subnet.private_subs[*].id)
 }
 
-output "publicsubnet_ids" {
-    value = [
-        aws_subnet.public_1a.id,
-        aws_subnet.public_1b.id]
+output "private_db_subs_ids" {
+    value = concat([], aws_subnet.private_db_subs[*].id)
 }
 
-output "privatesubnet_ids" {
-    value = [
-        aws_subnet.private_1a.id,
-        aws_subnet.private_1b.id]
+output "public_rt" {
+    value = aws_route_table.public_rt.id
 }
 
-output "public_route_table" {
-    value = aws_route_table.public_route_table.id
-}
-
-output "private_route_table" {
-    value = aws_route_table.private_route_table.id
+output "private_rt" {
+    value = aws_route_table.private_rt.id
 }
