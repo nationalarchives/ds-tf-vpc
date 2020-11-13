@@ -1,20 +1,16 @@
-output "db_subnet_group" {
-    value = aws_db_subnet_group.db_subnet_group.id
-}
-
-output "id" {
+output "vpc_id" {
     value = aws_vpc.vpc.id
 }
 
-output "public_subs_ids" {
+output "public_subnet_ids" {
     value = concat([], aws_subnet.public_subs[*].id)
 }
 
-output "private_subs_ids" {
+output "private_subnet_ids" {
     value = concat([], aws_subnet.private_subs[*].id)
 }
 
-output "private_db_subs_ids" {
+output "private_db_subnet_ids" {
     value = concat([], aws_subnet.private_db_subs[*].id)
 }
 

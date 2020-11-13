@@ -10,7 +10,7 @@ resource "aws_route_table" "public_rt" {
         Account     = var.account
         Name        = "public-${var.environment}"
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
@@ -40,13 +40,13 @@ resource "aws_route_table" "private_rt" {
         Account     = var.account
         Name        = "private-${var.environment}"
         Environment = var.environment
-        Terraform   = "True"
+        Terraform   = "true"
         Owner       = var.owner
         CreatedBy   = var.created_by
     }
 }
 
-resource "aws_route" "private_rt" {
+resource "aws_route" "internet_access" {
     route_table_id = aws_route_table.private_rt.id
     nat_gateway_id = aws_nat_gateway.nat_gateway.id
 
