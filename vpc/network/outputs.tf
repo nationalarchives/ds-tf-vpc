@@ -7,15 +7,15 @@ output "id" {
 }
 
 output "public_subs_ids" {
-    value = aws_subnet.public_subs[*].id
+    value = concat([], aws_subnet.public_subs[*].id)
 }
 
 output "private_subs_ids" {
-    value = aws_subnet.private_subs[*].id
+    value = concat([], aws_subnet.private_subs[*].id)
 }
 
 output "private_db_subs_ids" {
-    value = aws_subnet.private_db_subs[*].id
+    value = concat([], aws_subnet.private_db_subs[*].id)
 }
 
 output "public_rt" {
