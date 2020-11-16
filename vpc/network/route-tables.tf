@@ -26,7 +26,6 @@ resource "aws_route" "public_route_internet" {
 resource "aws_route_table_association" "public_rt_assoc" {
     for_each = aws_subnet.public_subs
 
-    #subnet_id      = aws_subnet.public_subs[count.index].id
     subnet_id      = each.value.id
     route_table_id = aws_route_table.public_rt.id
 }
@@ -57,7 +56,6 @@ resource "aws_route" "internet_access" {
 resource "aws_route_table_association" "private_rt_assoc" {
     for_each = aws_subnet.private_subs
 
-    #subnet_id      = aws_subnet.private_subs[count.index].id
     subnet_id      = each.value.id
     route_table_id = aws_route_table.private_rt.id
 }
