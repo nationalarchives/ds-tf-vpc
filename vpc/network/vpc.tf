@@ -45,5 +45,5 @@ resource "aws_eip" "nat" {
 
 resource "aws_nat_gateway" "nat_gateway" {
     allocation_id = aws_eip.nat.id
-    subnet_id     = aws_subnet.public_subs[0].id
+    subnet_id     = aws_subnet.public_subs[keys(aws_subnet.public_subs)[0]].id
 }
