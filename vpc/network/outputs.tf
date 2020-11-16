@@ -3,15 +3,15 @@ output "vpc_id" {
 }
 
 output "public_subnet_ids" {
-    value = concat([], aws_subnet.public_subs[*].id)
+    value= { for subnet in aws_subnet.public_subs : subnet.tags.Name => subnet.id }
 }
 
 output "private_subnet_ids" {
-    value = concat([], aws_subnet.private_subs[*].id)
+    value= { for subnet in aws_subnet.private_subs : subnet.tags.Name => subnet.id }
 }
 
 output "private_db_subnet_ids" {
-    value = concat([], aws_subnet.private_db_subs[*].id)
+    value= { for subnet in aws_subnet.private_db_subs : subnet.tags.Name => subnet.id }
 }
 
 output "public_rt" {

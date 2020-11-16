@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 resource "aws_network_acl" "vpc_nacl_private_db" {
     vpc_id     = var.vpc_id
-    subnet_ids = var.private_db_subnet_ids
+    subnet_ids = [ for entry in var.private_db_subnet_ids : entry ]
 
     tags = {
         Name        = "private-db-nacl-${var.environment}"

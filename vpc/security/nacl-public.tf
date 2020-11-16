@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------------
 resource "aws_network_acl" "vpc_nacl_public" {
     vpc_id     = var.vpc_id
-    subnet_ids = var.public_subnet_ids
+    subnet_ids = [ for entry in var.public_subnet_ids : entry ]
 
     tags = {
         Name        = "public-nacl-${var.environment}"
